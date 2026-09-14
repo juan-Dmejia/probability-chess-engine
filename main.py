@@ -15,3 +15,4 @@ con.execute(f"""
 
 con.close()
 print("Done! Local table created successfully.")
+
