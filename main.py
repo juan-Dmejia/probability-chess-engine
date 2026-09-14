@@ -1,16 +1,17 @@
 import duckdb
 
-# Connect and initialize the extension
-con = duckdb.connect()
-con.execute("INSTALL aixchess FROM community;")
-con.execute("LOAD aixchess;")
+# Connect to your local database file
+con = duckdb.connect("chess_data.db")
+con.execute("INSTALL aixchess FROM community; LOAD aixchess;")
 
-# Create a virtual table alias pointing to Hugging Face
 dataset_url = "hf://datasets/thomasd1/aix-lichess-database/low_compression/aix_lichess_2023-01_low.parquet"
-con.execute(f"CREATE VIEW games AS SELECT * FROM '{dataset_url}'")
 
-# Check that the view exists in DuckDB's internal catalog
-print(con.execute("SHOW TABLES;").df())
+# Download ONLY 1,000 games locally so the schema loads instantly
+con.execute(f"""
+    CREATE OR REPLACE TABLE games_sample AS 
+    SELECT * FROM '{dataset_url}' 
+    LIMIT 1000
+""")
 
-# View the column names and first 5 rows of data
-print(con.execute("SELECT * FROM games LIMIT 5;").df())
+con.close()
+print("Done! Local table created successfully.")

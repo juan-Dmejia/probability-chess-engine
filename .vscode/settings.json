@@ -1,3 +1,26 @@
 {
-    "python-envs.defaultEnvManager": "ms-python.python:system"
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "workbench.editorAssociations": {
+        "*.parquet": "duckdb.dataFileViewer",
+        "*.csv": "duckdb.dataFileViewer",
+        "*.tsv": "duckdb.dataFileViewer",
+        "*.xlsx": "duckdb.dataFileViewer"
+    },
+    "duckdb.databases": [
+        {
+            "alias": "my_chess_data",
+            "type": "file",
+            "path": "c:\\Users\\Juan\\OneDrive\\probability-chess-engine\\my_chess_data.db",
+            "readOnly": true,
+            "attached": false
+        },
+        {
+            "alias": "chess_data",
+            "type": "file",
+            "path": "c:\\Users\\Juan\\OneDrive\\probability-chess-engine\\chess_data.db",
+            "readOnly": true,
+            "attached": true
+        }
+    ],
+    "duckdb.defaultDatabase": "chess_data"
 }
