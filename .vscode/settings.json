@@ -26,7 +26,7 @@
             "type": "file",
             "path": "c:\\Users\\Juan\\OneDrive\\probability-chess-engine\\chess_data_with_evals.db",
             "readOnly": true,
-            "attached": true
+            "attached": false
         }
     ],
     "duckdb.defaultDatabase": "chess_data_with_evals"
