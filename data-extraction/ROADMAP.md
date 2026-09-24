@@ -36,19 +36,22 @@ While I could spend a very long time creating my own custom chess board reader a
 This part will require a local stockfish application installed somewhere on the computer. I will denote this in the README file. 
 
 - [x] Store custom pgn-strings in a dictionary numbering each legal move: dict(position_num: dict(pgn: str, eval: int))
-- [] Run and store stockfish evaluation on base pgn-string
-- [] Run stockfish evaluations on all the custom pgn-strings with appended moves
+- [x] Run and store stockfish evaluation on base pgn-string
+- [x] Run stockfish evaluations on all the custom pgn-strings with appended moves
     - A stockfish depth of 10 will be used initially
-- [] Store stockfish evaluations with their corresponding pgn-strings number
-- [] Classify moves based on the difference between their evaluation and the base evaluation (original pgn-string)
+- [x] Store stockfish evaluations with their corresponding pgn-strings number
+- [x] Classify moves based on the difference between their evaluation and the base evaluation (original pgn-string)
     - Best: (0-10), Good: (10-30), Innacurate: (30-100), Bad/Blunder: (100+)
+- [x] Create SQL table to store the number of every type of move (best -> blunder)
 
-We now have one statistical sample. We know have to run the same process on a large number of positions **n**, and store distinct moves in a table. For example, when a new move is tried, lets say e5, create a new row for that move. The table will have columns: Move, # of Best, # of Good, # of Innacurate, # of Blunders. Now every time the move e5 is tried, in any position, add 1 to the column of the evaluation it got.  
-
-Eventually we can hopefully compute fairly strong statistical probabilites that any certain move **x** will be at least good, given any condition. For example, given that the position has 5+ white pawns, the probability that **x** is at least considerd good is **[(# of Best for x) + (# of Good for x)] / n**
+We now have one statistical sample for some legal moves on one given condition (white_pawns >= 5).
+The above test must be run a large amount of times to collect multiple instances of each move being played.
+For example, with a large sample size of the move e5 being played, we can estimate the probability of e5 being a good move to play for white, given that the position has 5+ white pawns, to be:
+> (# of times e5 is categorized as at least good) / (# of times e5 is played)
 
 ## Probability Estimations and Engine Strength
+Before I aimlessley run the simulation hundreds of times, I need to determine the concrete conditions the engine will use to determine probabilities. Then I must create custom functions that will run the simulations for me and organize the data in a way easy for the engine to collect and compute with.
+
 
 
 ## Engine Logic
-- [] Build move recommendation function based on previously calculated probabilites

@@ -29,7 +29,6 @@ df = con.execute("""
     USING SAMPLE 1 ROWS;
 """).df()
 
-con.close()
 
 max_move = functions.ply_to_move_number(df.ply.iloc[0])
 base_pgn = functions.cut_pgn(df.pgn_string.iloc[0], max_move)
@@ -45,4 +44,47 @@ for i in range(len(legal_moves)):
 print(f"base eval: {positions['base']['eval']}, pgn: {positions['base']['pgn']}")
 print(f"last move: {positions[str(len(legal_moves) - 1)]['eval']}, pgn: {positions[str(len(legal_moves) - 1)]['pgn']}")
 
+con.execute("""
+    CREATE OR REPLACE TABLE test_game_moves (
+        quality VARCHAR PRIMARY KEY,
+        count INT
+    );
+
+""")
+
+move_count = 0
+best_count = 0
+good_count = 0
+mid_count = 0
+blunder_count = 0
+
+for key in positions:
+    if key == "base":
+        continue
+
+    eval_diff = positions["base"]["eval"] - positions[key]["eval"]
+    move_count += 1
+
+    if eval_diff <= 10:
+        best_count += 1
+    elif eval_diff <= 30:
+        good_count += 1
+    elif eval_diff <= 100:
+        mid_count += 1
+    else:
+        blunder_count += 1
+
+con.execute(f"""
+    INSERT INTO test_game_moves
+    VALUES
+    ('total', {move_count}),
+    ('best', {best_count}),
+    ('good', {good_count}),
+    ('mid', {mid_count}),
+    ('blunder', {blunder_count});
+""")
+
+rows = con.execute("SELECT * FROM test_game_moves;").fetchall()
+print(rows)
+con.close()
 
