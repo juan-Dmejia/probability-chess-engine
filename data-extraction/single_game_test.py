@@ -32,7 +32,12 @@ con.close()
 max_move = functions.ply_to_move_number(df.ply.iloc[0])
 base_pgn = functions.cut_pgn(df.pgn_string.iloc[0], max_move)
 legal_moves = functions.return_legal_moves(base_pgn)
-custom_pgns = []
+
+positions = {"base": {"pgn": base_pgn, "eval": 0}}
+
 for i in range(len(legal_moves)):
-    custom_pgns.append(functions.append_to_pgn(base_pgn, legal_moves[i], max_move))
+    positions[str(i)] = {"pgn": functions.append_to_pgn(base_pgn, legal_moves[i], max_move), "eval": 0}
+
+print("base: " + positions["base"]["pgn"])
+print("last custom move: " + positions[str(len(legal_moves) - 1)]["pgn"])
 

@@ -30,12 +30,12 @@ While I could spend a very long time creating my own custom chess board reader a
 - [x] generate and store legal moves as a list at end position using legal_moves()
     - At most, the # of legal moves will be 218. Proven by Tobs40 in his Lichess Blog <i>Why a reachable position can have at most 218 playable moves</i>
 - [x] Extract moves in SAN format for easy reading and later appending onto pgn-strings
-- [] Append SAN format legal move strings to base pgn-string using custom function
+- [x] Append SAN format legal move strings to base pgn-string using custom function
 
 ## Running and Comparing Stockfish Evaluations
 This part will require a local stockfish application installed somewhere on the computer. I will denote this in the README file. 
 
-- [] Store custom pgn-strings in a dictionary numbering each legal move: dict(1: 'pgn-string representing new move')
+- [x] Store custom pgn-strings in a dictionary numbering each legal move: dict(position_num: dict(pgn: str, eval: int))
 - [] Run and store stockfish evaluation on base pgn-string
 - [] Run stockfish evaluations on all the custom pgn-strings with appended moves
     - A stockfish depth of 10 will be used initially
