@@ -1,8 +1,7 @@
 import duckdb
-import re
+import functions
 
-
-con = duckdb.connect("chess_data_with_evals.db")
+con = duckdb.connect("chess_data.db")
 con.execute("LOAD aixchess;")
 
 df = con.execute("""
@@ -30,20 +29,10 @@ df = con.execute("""
 
 con.close()
 
-def ply_to_move_number(ply: int):
-    if (ply % 2 == 0):
-        return ((ply + 2)//2)
-    else:
-        return ((ply + 1)//2)
-
-def cut_pgn(pgn: str, max_move: int) -> str:
-    # Matches the space right before the next move number (e.g., " 4.")
-    pattern = r'\s+' + str(max_move + 1) + r'\.'
-    
-    # Split the string at that move number
-    cut_string = re.split(pattern, pgn, maxsplit=1)[0]
-    return cut_string.strip()
-
-max_move = ply_to_move_number(df.ply.iloc[0])
-print(cut_pgn(df.pgn_string.iloc[0], max_move))
+max_move = functions.ply_to_move_number(df.ply.iloc[0])
+base_pgn = functions.cut_pgn(df.pgn_string.iloc[0], max_move)
+legal_moves = functions.return_legal_moves(base_pgn)
+custom_pgns = []
+for i in range(len(legal_moves)):
+    custom_pgns.append(functions.append_to_pgn(base_pgn, legal_moves[i], max_move))
 
