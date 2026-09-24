@@ -1,6 +1,7 @@
 import io
 import re
 import chess.pgn
+import chess.engine
 
 def return_legal_moves(pgn: str):
     # Parse string into a Game object
@@ -33,3 +34,22 @@ def append_to_pgn(base_pgn: str, new_move: str, last_move_num: int):
     parts = [base_pgn, f"{last_move_num + 1}.", new_move]
     new_pgn = " ".join(parts)
     return new_pgn
+
+def stockfish_eval(pgn: str, path):
+    # Parse PGN string into a Board position at the final move
+    game = chess.pgn.read_game(io.StringIO(pgn))
+    board = game.end().board()
+
+    # Open Stockfish and run evaluation
+    with chess.engine.SimpleEngine.popen_uci(path) as engine:
+        # Use depth=10 for quick evaluation
+        info = engine.analyse(board, chess.engine.Limit(depth=10))
+    
+        # Extract score from White's perspective
+        score = info["score"].white()
+
+        if score.is_mate():
+            return 10000
+        else:
+            return score.score()
+    

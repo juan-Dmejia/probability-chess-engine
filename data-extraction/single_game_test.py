@@ -1,6 +1,8 @@
 import duckdb
 import functions
 
+PATH_TO_STOCKFISH = "C:/Users/Juan/Desktop/stockfish/stockfish-windows-x86-64-universal.exe"
+
 con = duckdb.connect("chess_data.db")
 con.execute("LOAD aixchess;")
 
@@ -32,12 +34,15 @@ con.close()
 max_move = functions.ply_to_move_number(df.ply.iloc[0])
 base_pgn = functions.cut_pgn(df.pgn_string.iloc[0], max_move)
 legal_moves = functions.return_legal_moves(base_pgn)
+base_eval = functions.stockfish_eval(base_pgn, PATH_TO_STOCKFISH)
 
-positions = {"base": {"pgn": base_pgn, "eval": 0}}
+positions = {"base": {"pgn": base_pgn, "eval": base_eval}}
 
 for i in range(len(legal_moves)):
-    positions[str(i)] = {"pgn": functions.append_to_pgn(base_pgn, legal_moves[i], max_move), "eval": 0}
+    current_pgn = functions.append_to_pgn(base_pgn, legal_moves[i], max_move)
+    positions[str(i)] = {"pgn": current_pgn, "eval": functions.stockfish_eval(current_pgn, PATH_TO_STOCKFISH)}
 
-print("base: " + positions["base"]["pgn"])
-print("last custom move: " + positions[str(len(legal_moves) - 1)]["pgn"])
+print(f"base eval: {positions['base']['eval']}, pgn: {positions['base']['pgn']}")
+print(f"last move: {positions[str(len(legal_moves) - 1)]['eval']}, pgn: {positions[str(len(legal_moves) - 1)]['pgn']}")
+
 
