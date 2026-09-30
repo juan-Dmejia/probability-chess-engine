@@ -1,5 +1,5 @@
 import duckdb
-import functions
+import utility
 
 PATH_TO_STOCKFISH = "C:/Users/Juan/Desktop/stockfish/stockfish-windows-x86-64-universal.exe"
 
@@ -29,20 +29,12 @@ df = con.execute("""
     USING SAMPLE 1 ROWS;
 """).df()
 
+max_move = utility.ply_to_move_number(df.ply.iloc[0])
+base_pgn = utility.cut_pgn(df.pgn_string.iloc[0], max_move)
 
-max_move = functions.ply_to_move_number(df.ply.iloc[0])
-base_pgn = functions.cut_pgn(df.pgn_string.iloc[0], max_move)
-legal_moves = functions.return_legal_moves(base_pgn)
-base_eval = functions.stockfish_eval(base_pgn, PATH_TO_STOCKFISH)
+scanner = utility.BoardScanner(base_pgn)
 
-positions = {"base": {"pgn": base_pgn, "eval": base_eval}}
-
-for i in range(len(legal_moves)):
-    current_pgn = functions.append_to_pgn(base_pgn, legal_moves[i], max_move)
-    positions[str(i)] = {"pgn": current_pgn, "eval": functions.stockfish_eval(current_pgn, PATH_TO_STOCKFISH)}
-
-print(f"base eval: {positions['base']['eval']}, pgn: {positions['base']['pgn']}")
-print(f"last move: {positions[str(len(legal_moves) - 1)]['eval']}, pgn: {positions[str(len(legal_moves) - 1)]['pgn']}")
+positions = scanner.possible_positions()
 
 con.execute("""
     CREATE OR REPLACE TABLE test_game_moves (

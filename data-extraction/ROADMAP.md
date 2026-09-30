@@ -47,10 +47,32 @@ This part will require a local stockfish application installed somewhere on the 
 We now have one statistical sample for some legal moves on one given condition (white_pawns >= 5).
 The above test must be run a large amount of times to collect multiple instances of each move being played.
 For example, with a large sample size of the move e5 being played, we can estimate the probability of e5 being a good move to play for white, given that the position has 5+ white pawns, to be:
-> (# of times e5 is categorized as at least good) / (# of times e5 is played)
+> (# of times e5 is categorized as at least good) / (# of times e5 is checked total)
 
-## Probability Estimations and Engine Strength
-Before I aimlessley run the simulation hundreds of times, I need to determine the concrete conditions the engine will use to determine probabilities. Then I must create custom functions that will run the simulations for me and organize the data in a way easy for the engine to collect and compute with.
+## Generaliazation
+To collect more useful data, the logic above needs to be generalized so that a single simulation creates all the necessary tables and data that will feed the engine.
+
+The engine will be fed multiple probabilites given multiple conditions. For example, if the engine is playing with a board position where it has 6 pawns, the farthest pawn rank is 6, the king's rank is 5, etc.
+The engine needs to know the probabilitly that a move will be a good move given the above conditions, for all the legal moves it can play. The more detailed engine logic will be created later, for now just the data must be extracted.
+
+- [x] Determine the conditions each position will be checked for
+- [x] Create BoardScanner class that wraps utility functions to generate possible positions and check above conditions
+- [] Create check_conditions method within BoardScanner class that checks which of the above conditions are satisfied
+    - [x] number of pawns
+    - [] farthest pawn rank
+    - [] king rank
+    - [] is king checked
+    - [] is queen hanging
+    - [] is rook hanging
+    - [] is knight hanging
+    - [] is bishop hanging
+    - [] does pawn attack a piece
+    - [] does king attack a piece
+    - [] does knight attack a piece
+    - [] does bishop attack a piece
+    - [] does rook attack a piece
+    - [] does queen attack a piece
+
 
 
 
