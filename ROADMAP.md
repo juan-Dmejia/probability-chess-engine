@@ -23,7 +23,7 @@ The pgn-string will be notated "1. (white move) (black move) 2. (white move) (bl
 Now I have a pgn-string denoting a randomly selected position from a randomly selected game
 
 ## Generating legal moves
-While I could spend a very long time creating my own custom chess board reader and parser, as well as a legal move generator, I opted to use the already available functions from the Python Chess Library. The chess library also allows for communication with a local stockfish application.
+Using the existing Python Chess library gives me access to the incredibly useful board and piece classes, as well as teh ability to connect to a local stockfish app on my computer.
 
 - [x] install python-chess and test code snippets
 - [x] parse pgn-string into a Game object, then get the board state at the end of the string
@@ -57,21 +57,20 @@ The engine needs to know the probabilitly that a move will be a good move given 
 
 - [x] Determine the conditions each position will be checked for
 - [x] Create BoardScanner class that wraps utility functions to generate possible positions and check above conditions
-- [] Create check_conditions method within BoardScanner class that checks which of the above conditions are satisfied
+- [x] Create check_conditions method within BoardScanner class that checks which of the above conditions are satisfied
     - [x] number of pawns
     - [x] farthest pawn rank
     - [x] king rank
-    - [x] is queen hanging
-    - [x] is rook hanging
-    - [x] is knight hanging
-    - [x] is bishop hanging
-    - [] is threatening pawn
-    - [] is threatening knight
-    - [] is threatening bishop
-    - [] is threatening rook
-    - [] is threatening queen
+    - [x] is piece hanging
+    - [x] # of enemy (piece type) threatened by (piece type)
 
-
+## Creating the pipeline
+Now to put it all together the process would be:
+1. Sample the last 10,000 games from the Lichess database
+2. Pick a random position from each of the games, convert that position into a pgn-string and store in a df
+3. Create a table with 
+4. Run the BoardScanner on all positions with each pgn-string as the base, for each position store the following:
+    - 
 
 
 ## Engine Logic
