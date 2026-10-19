@@ -59,19 +59,17 @@ The engine needs to know the probabilitly that a move will be a good move given 
 - [x] Create BoardScanner class that wraps utility functions to generate possible positions and check above conditions
 - [] Create check_conditions method within BoardScanner class that checks which of the above conditions are satisfied
     - [x] number of pawns
-    - [] farthest pawn rank
-    - [] king rank
-    - [] is king checked
-    - [] is queen hanging
-    - [] is rook hanging
-    - [] is knight hanging
-    - [] is bishop hanging
-    - [] does pawn attack a piece
-    - [] does king attack a piece
-    - [] does knight attack a piece
-    - [] does bishop attack a piece
-    - [] does rook attack a piece
-    - [] does queen attack a piece
+    - [x] farthest pawn rank
+    - [x] king rank
+    - [x] is queen hanging
+    - [x] is rook hanging
+    - [x] is knight hanging
+    - [x] is bishop hanging
+    - [] is threatening pawn
+    - [] is threatening knight
+    - [] is threatening bishop
+    - [] is threatening rook
+    - [] is threatening queen
 
 
 
