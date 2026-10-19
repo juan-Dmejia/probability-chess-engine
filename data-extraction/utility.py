@@ -22,6 +22,39 @@ def append_to_pgn(base_pgn: str, new_move: str, last_move_num: int):
     parts = [base_pgn, f"{last_move_num + 1}.", new_move]
     return  " ".join(parts)
 
+def is_hanging(board, piece):
+    PIECE_VALUES = {
+        chess.PAWN: 1,
+        chess.KNIGHT: 3,
+        chess.BISHOP: 3,
+        chess.ROOK: 5,
+        chess.QUEEN: 9,
+        chess.KING: 0
+    }
+
+    attackers = None
+    defenders = None
+
+    if board.color_at(piece) == chess.WHITE:
+        attackers = board.attackers(chess.BLACK, piece)
+        defenders = board.attackers(chess.WHITE, piece)
+    else:
+        attackers = board.attackers(chess.WHITE, piece)
+        defenders = board.attackers(chess.BLACK, piece)
+
+    # Sum the actual material value of the attacking and defending pieces
+    total_attacker_value = sum(
+        PIECE_VALUES.get(board.piece_type_at(sq), 0) for sq in attackers
+    )
+    total_defender_value = sum(
+        PIECE_VALUES.get(board.piece_type_at(sq), 0) for sq in defenders
+    )
+
+    if total_attacker_value > total_defender_value:
+        return True
+
+    
+
 
 class BoardScanner:
     def __init__(self, base_pgn: str):
@@ -80,64 +113,59 @@ class BoardScanner:
                 highest_pawn_rank = rank
             pawn_count += 1
 
-        return {'pawn_count': pawn_count, 'pawn_rank': highest_pawn_rank}
+        return {'pawn_count': pawn_count, 'max_pawn_rank': highest_pawn_rank}
 
     def get_king_rank(self):
         king_pos = self.board.king(chess.WHITE)
         return {'king_rank': math.ceil(king_pos / 7)}
         
     def is_piece_hanging(self, piece_type: chess.PieceType):
-        PIECE_VALUES = {
-            chess.PAWN: 1,
-            chess.KNIGHT: 3,
-            chess.BISHOP: 3,
-            chess.ROOK: 5,
-            chess.QUEEN: 9,
-            chess.KING: 0
-        }
 
         pieces_to_check = self.board.pieces(piece_type, chess.WHITE)
 
         for piece in pieces_to_check:
-            attackers = self.board.attackers(chess.BLACK, piece)
-            defenders = self.board.attackers(chess.WHITE, piece)
-
-            # Sum the actual material value of the attacking and defending pieces
-            total_attacker_value = sum(
-                PIECE_VALUES.get(self.board.piece_type_at(sq), 0) for sq in attackers
-            )
-            total_defender_value = sum(
-                PIECE_VALUES.get(self.board.piece_type_at(sq), 0) for sq in defenders
-            )
-
-            if total_attacker_value > total_defender_value:
+            if is_hanging(self.board, piece):
                 return {f'{chess.piece_name(piece_type)} hanging': True}
 
         return {f'{chess.piece_name(piece_type)} hanging': False}
 
-    def threatens_piece(self, piece_type: chess.PieceType):
-        pieces_to_check = self.board.pieces(piece_type, chess.WHITE)
+    def pieces_threatened(self, attack_piece_type: chess.PieceType, threatened_piece_type: chess.PieceType):
+        pieces_to_check = self.board.pieces(attack_piece_type, chess.WHITE)
 
         for piece in pieces_to_check:
-            squares_attacked = self.board.attacks(piece)
-            pieces_attacked = []
-            for sq in squares_attacked:
-                if self.board.color_at(sq) == chess.BLACK:
-                    if self.board.piece_type_at(sq)
-                    return {f'{chess.piece_name(piece_type)} threatens piece': True}
+            pieces_attacked = self.board.attacks(piece)
+            threatened_pieces = []
+            for sq in pieces_attacked:
+                if is_hanging(self.board, sq):
+                    threatened_pieces.append(sq)
+            return {f'# of ({chess.piece_name(threatened_piece_type)}) threatened by ({chess.piece_name(attack_piece_type)})': len(threatened_pieces)}
+
+                    
                 
 
         
 
     def check_all_conditions(self):
+
+        hanging_piece_dict = {}
+        threatened_piece_dict = {}
+        chess_piece_types = [chess.KING, chess.QUEEN, chess.ROOK, chess.BISHOP, chess.KNIGHT, chess.PAWN]
+
+
+        for piece_type in chess_piece_types:
+            hanging_piece_dict.update(self.is_piece_hanging(piece_type))
+
+
+        for atk_type in chess_piece_types:
+            for def_type in chess_piece_types:
+                threatened_piece_dict.update(self.pieces_threatened(atk_type, def_type))
+
+
         return (
             self.get_pawn_conditions() |
             self.get_king_rank() |
-            self.is_piece_hanging(chess.QUEEN) |
-            self.is_piece_hanging(chess.ROOK) |
-            self.is_piece_hanging(chess.BISHOP) |
-            self.is_piece_hanging(chess.KNIGHT) |
-            self.is_piece_hanging(chess.PAWN)
+            hanging_piece_dict |
+            threatened_piece_dict
         )
             
 
@@ -147,5 +175,4 @@ pgn_string = "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Bxc6 dxc6 5. O-O"
 test_scanner = BoardScanner(pgn_string)
 
 print(test_scanner.check_all_conditions())
-print(test_scanner.threatens_piece(chess.QUEEN))
 print(test_scanner.board)
