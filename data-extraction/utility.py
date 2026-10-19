@@ -3,6 +3,7 @@ import re
 import chess.pgn
 import chess.engine
 import math
+import pandas as pd
 
 def ply_to_move_number(ply: int):
     if (ply % 2 == 0):
@@ -173,6 +174,12 @@ class BoardScanner:
 # test case
 pgn_string = "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Bxc6 dxc6 5. O-O"
 test_scanner = BoardScanner(pgn_string)
+df = pd.DataFrame([test_scanner.check_all_conditions()])
 
-print(test_scanner.check_all_conditions())
-print(test_scanner.board)
+# Disable column truncation (shows all columns)
+pd.set_option('display.max_columns', None)
+
+# Optional: Also prevent text inside columns from getting cut off
+pd.set_option('display.max_colwidth', None)
+
+print(df)
